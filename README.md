@@ -273,12 +273,6 @@ For continual retraining:
 - Previous model weights are loaded.
 - All layers are frozen.
 - Only the last 60 layers are unfrozen.
-- Learning rate is reduced to:
-
-```
-1e-5
-```
-
 to prevent catastrophic forgetting.
 
 ---
@@ -329,7 +323,7 @@ Factor:
 Stores the best model:
 
 ```
-emotion_v2_best.h5
+emotion_mobilenet_best.h5
 ```
 
 ---

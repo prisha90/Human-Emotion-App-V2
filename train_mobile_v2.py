@@ -19,9 +19,6 @@ from tensorflow.keras.callbacks import (
 from sklearn.utils.class_weight import compute_class_weight
 
 
-# =====================================================
-# RANDOM SEED
-# =====================================================
 
 SEED = 42
 
@@ -30,9 +27,6 @@ np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
 
-# =====================================================
-# CONFIGURATION
-# =====================================================
 
 IMG_SIZE = 96
 
@@ -43,9 +37,6 @@ EPOCHS = 40
 LEARNING_RATE = 5e-5
 
 
-# =====================================================
-# DATA AUGMENTATION
-# =====================================================
 
 train_datagen = ImageDataGenerator(
     rescale=1.0 / 255,
@@ -67,10 +58,6 @@ test_datagen = ImageDataGenerator(
     rescale=1.0 / 255
 )
 
-
-# =====================================================
-# DATA GENERATORS
-# =====================================================
 
 train_gen = train_datagen.flow_from_directory(
     "data/train",
@@ -101,9 +88,6 @@ test_gen = test_datagen.flow_from_directory(
 )
 
 
-# =====================================================
-# CLASS WEIGHTS
-# =====================================================
 
 labels = train_gen.classes
 
@@ -126,20 +110,12 @@ for idx, weight in class_weights.items():
     )
 
 
-# =====================================================
-# BASE MODEL
-# =====================================================
-
 base_model = MobileNetV2(
     input_shape=(IMG_SIZE, IMG_SIZE, 3),
     include_top=False,
     weights="imagenet"
 )
 
-
-# =====================================================
-# FINE TUNING
-# =====================================================
 
 for layer in base_model.layers[:-60]:
 
@@ -151,9 +127,6 @@ for layer in base_model.layers[-60:]:
     layer.trainable = True
 
 
-# =====================================================
-# CLASSIFICATION HEAD
-# =====================================================
 
 x = base_model.output
 
@@ -161,10 +134,6 @@ x = GlobalAveragePooling2D()(x)
 
 x = BatchNormalization()(x)
 
-
-# ------------------------
-# Dense 2048
-# ------------------------
 
 x = Dense(
     2048,
@@ -176,9 +145,6 @@ x = Dropout(
 )(x)
 
 
-# ------------------------
-# Dense 1024
-# ------------------------
 
 x = Dense(
     1024,
@@ -190,9 +156,6 @@ x = Dropout(
 )(x)
 
 
-# ------------------------
-# Dense 512
-# ------------------------
 
 x = Dense(
     512,
@@ -206,10 +169,6 @@ x = Dropout(
 )(x)
 
 
-# ------------------------
-# Dense 256
-# ------------------------
-
 x = Dense(
     256,
     activation="relu"
@@ -222,9 +181,6 @@ x = Dropout(
 )(x)
 
 
-# =====================================================
-# OUTPUT LAYER
-# =====================================================
 
 output = Dense(
     7,
@@ -238,10 +194,6 @@ model = Model(
 )
 
 
-# =====================================================
-# COMPILE MODEL
-# =====================================================
-
 optimizer = tf.keras.optimizers.Adam(
     learning_rate=LEARNING_RATE
 )
@@ -253,9 +205,6 @@ model.compile(
 )
 
 
-# =====================================================
-# CALLBACKS
-# =====================================================
 
 early_stopping = EarlyStopping(
     monitor="val_loss",
@@ -296,10 +245,6 @@ callbacks = [
 ]
 
 
-# =====================================================
-# TRAIN MODEL
-# =====================================================
-
 history = model.fit(
     train_gen,
 
@@ -314,10 +259,6 @@ history = model.fit(
     verbose=1
 )
 
-
-# =====================================================
-# SAVE FINAL MODEL
-# =====================================================
 
 model.save(
     "models/emotion_mobilenet_final_v2.h5"
