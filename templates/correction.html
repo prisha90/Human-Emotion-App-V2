@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Correct Emotion</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="panel">
+        <h1>Correction Needed</h1>
+
+        <p class="lead">
+          The prediction was incorrect. Please select the actual emotion.
+        </p>
+      </div>
+
+      <div class="preview-card">
+        <div class="result-badge">
+          Predicted Emotion:
+
+          <strong> {{ predicted_emotion }} </strong>
+        </div>
+
+        <img src="{{ image_path }}" class="preview-img" />
+
+        <br /><br />
+
+        <form action="/save_correction" method="POST">
+          <!-- Hidden values -->
+
+          <input type="hidden" name="image_path" value="{{ image_path }}" />
+
+          <input
+            type="hidden"
+            name="predicted_emotion"
+            value="{{ predicted_emotion }}"
+          />
+
+          <input type="hidden" name="confidence" value="{{ confidence }}" />
+
+          <input type="hidden" name="source" value="{{ source }}" />
+
+          <h3>Select Correct Emotion</h3>
+
+          <select name="actual_emotion" required>
+            {% for label in labels %}
+
+            <option value="{{ label }}">{{ label }}</option>
+
+            {% endfor %}
+          </select>
+
+          <br /><br />
+
+          <button type="submit">Save Correction</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

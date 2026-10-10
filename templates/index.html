@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Detection AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Left Panel -->
+    <div class="panel">
+
+        <h1>Emotion Detection AI</h1>
+
+        <p class="lead">
+            Upload an image OR use your webcam to predict facial emotion in real-time.
+        </p>
+
+        <!-- Upload Form -->
+        <form class="form"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <input type="hidden"
+                   name="mode"
+                   value="upload">
+
+            <div class="file-wrap">
+
+                <label class="upload-btn">
+
+                    Choose Image
+
+                    <input type="file"
+                           name="image"
+                           id="imageInput"
+                           accept="image/*">
+
+                </label>
+
+                <span class="hint"
+                      id="fileName">
+
+                    No file selected
+
+                </span>
+
+            </div>
+
+            <button type="submit">
+                Predict from Image
+            </button>
+
+        </form>
+
+        <hr style="border-color:rgba(255,255,255,0.05);margin:18px 0;">
+
+        <!-- Webcam -->
+        <div class="form">
+
+            <p class="hint">
+                OR use webcam:
+            </p>
+
+            <video id="video"
+                   width="260"
+                   autoplay></video>
+
+            <canvas id="canvas"
+                    width="260"
+                    height="260"
+                    style="display:none;">
+            </canvas>
+
+            <div class="row">
+
+                <button type="button"
+                        onclick="startCamera()">
+
+                    Start Camera
+
+                </button>
+
+                <button type="button"
+                        onclick="capture()">
+
+                    Capture & Predict
+
+                </button>
+
+            </div>
+
+            <form method="POST"
+                  id="webcamForm">
+
+                <input type="hidden"
+                       name="mode"
+                       value="webcam">
+
+                <input type="hidden"
+                       name="imageData"
+                       id="imageData">
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Right Panel -->
+    <div class="preview-card">
+
+        {% if emotion %}
+        <div class="result-badge">
+
+            Predicted Emotion:
+            <strong>{{ emotion }}</strong>
+
+        </div>
+        {% else %}
+        <div class="result-badge">
+
+            No prediction yet
+
+        </div>
+        {% endif %}
+
+
+        {% if user_image %}
+
+        <img src="{{ user_image }}"
+             class="preview-img">
+
+        {% else %}
+
+        <div class="preview-empty">
+
+            Image preview will appear here
+
+        </div>
+
+        {% endif %}
+
+
+        {% if confidence %}
+
+        <div class="conf">
+
+            Confidence:
+            {{ confidence }}%
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- Feedback Section -->
+        {% if emotion %}
+
+        <hr style="margin:20px 0;
+                   border-color:rgba(255,255,255,0.1);">
+
+
+        <h3>
+
+            Was I correct?
+
+        </h3>
+
+
+        <div class="row">
+
+            <!-- Correct -->
+            
+            <form action="/correct"
+            method="POST">
+
+    <input type="hidden"
+           name="image_path"
+           value="{{ user_image }}">
+
+    <input type="hidden"
+           name="predicted_emotion"
+           value="{{ emotion }}">
+
+    <input type="hidden"
+           name="confidence"
+           value="{{ confidence }}">
+
+    <input type="hidden"
+           name="source"
+           value="{{ source }}">
+
+    <button type="submit">
+
+        ✓ Correct
+
+    </button>
+
+</form>
+
+
+            <!-- Wrong -->
+            <form action="/wrong"
+      method="POST">
+
+    <input type="hidden"
+           name="image_path"
+           value="{{ user_image }}">
+
+    <input type="hidden"
+           name="predicted_emotion"
+           value="{{ emotion }}">
+
+    <input type="hidden"
+           name="confidence"
+           value="{{ confidence }}">
+
+    <input type="hidden"
+           name="source"
+           value="{{ source }}">
+
+    <button type="submit">
+
+        ✗ Wrong
+
+    </button>
+
+</form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+const input = document.getElementById("imageInput");
+const fileName = document.getElementById("fileName");
+
+if (input) {
+
+    input.addEventListener("change", function () {
+
+        if (this.files[0]) {
+
+            fileName.textContent = this.files[0].name;
+
+        }
+
+    });
+
+}
+
+
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const imageData = document.getElementById("imageData");
+
+
+function startCamera() {
+
+    navigator.mediaDevices
+        .getUserMedia({ video: true })
+
+        .then(stream => {
+
+            video.srcObject = stream;
+
+        })
+
+        .catch(err => {
+
+            alert("Camera access denied");
+
+        });
+
+}
+
+
+function capture() {
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    const dataURL = canvas.toDataURL("image/png");
+
+    imageData.value = dataURL;
+
+    document
+        .getElementById("webcamForm")
+        .submit();
+
+}
+
+</script>
+
+</body>
+</html>

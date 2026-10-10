@@ -1,0 +1,6 @@
+filename,predicted,actual,confidence,correct,timestamp,source,model_version
+capture_20260625_212222_90bf26.jpg,Angry,Happy,91.83,False,2026-06-25 21:22:35,webcam,v1
+capture_20260625_212246_3c56f1.jpg,Angry,Angry,89.54,True,2026-06-25 21:22:50,webcam,v1
+2026-06-25 21:28:18.065602,capture_20260625_212741_3abc040b.jpg,webcam,Happy,Happy,48.49911630153656,True
+2026-06-25 21:28:51.340543,capture_20260625_212831_53aee3b8.jpg,webcam,Sad,Angry,50.0404417514801,False
+2026-06-25 21:29:39.726749,capture_20260625_212927_5ad37c5c.jpg,webcam,Sad,Neutral,89.24155235290527,False
