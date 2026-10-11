@@ -31,6 +31,5 @@ tmp/
 
 # User feedback images and collected datasets
 custom_dataset/
-data/
 static/uploaded.jpg
 static/webcam.jpg
